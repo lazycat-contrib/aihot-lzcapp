@@ -30,15 +30,7 @@ images:
     delivery:
       # 官方商店要求镜像来自懒猫镜像源：由 Action 转存并改写 manifest 里 site 服务的 image
       mode: lazycat
-  - id: aihot-db
-    target: service
-    service: db
-    # 官方商店同样要求数据库镜像来自懒猫镜像源；17-alpine 是滚动 tag，按当前 digest 转存
-    source: docker.io/library/postgres
-    channel: stable
-    tag_regex: '^17-alpine$'
-    delivery:
-      mode: lazycat
+  # 数据库镜像已直接引用懒猫镜像源里现成的 postgres（见 lzc-manifest.yml），无需转存
 
 stores:
   official:

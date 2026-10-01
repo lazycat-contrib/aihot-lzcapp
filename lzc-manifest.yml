@@ -11,7 +11,9 @@ application:
     - /
 services:
   db:
-    image: postgres:17-alpine
+    # 用懒猫镜像源里已转存的 postgres（上游 library/postgres:17.11，与 rote-lzcapp 同一个）：
+    # 官方商店要求所有运行时镜像来自 registry.lazycat.cloud，而这个 Action 只转存版本源镜像
+    image: registry.lazycat.cloud/czyt/library/postgres:d98799bcb9fa429e
     environment:
       POSTGRES_USER: aihot
       POSTGRES_PASSWORD: '{{ stable_secret "aihot#db_password" }}'

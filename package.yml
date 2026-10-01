@@ -1,0 +1,18 @@
+package: cloud.lazycat.app.aihot
+version: 1.0.1
+name: AIHOT
+description: A site that finds its own hot topics and writes a daily digest — configurable news aggregation with RSS, admin console and MCP.
+min_os_version: 1.5.0
+homepage: https://github.com/KKKKhazix/AIHOT
+author: KKKKhazix
+license: MIT
+locales:
+  zh:
+    name: "AIHOT"
+    description: "自己找热点、自己写日报的网站框架：抓信源、调模型打分与归组，生成日报、RSS 与后台，内置 MCP。"
+  zh_CN:
+    name: "AIHOT"
+    description: "自己找热点、自己写日报的网站框架：抓信源、调模型打分与归组，生成日报、RSS 与后台，内置 MCP。"
+  en:
+    name: "AIHOT"
+    description: "A site that finds its own hot topics and writes a daily digest, with RSS, an admin console and MCP."

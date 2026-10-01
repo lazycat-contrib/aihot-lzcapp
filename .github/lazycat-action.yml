@@ -1,0 +1,77 @@
+version: 1
+
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: dist/aihot.lpk
+  target_arch: amd64
+
+update:
+  strategy: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: aihot
+
+build:
+  toolchains: []
+  run_buildscript: false
+
+images:
+  - id: aihot
+    target: service
+    service: site
+    # 上游不发版也不推镜像，这个 tag 由 dockers-x/AIHOT 的构建工作流产出
+    # （每 6 小时比对上游 main，变了就构建并推 1.0.<n>）
+    source: ghcr.io/dockers-x/aihot
+    channel: stable
+    tag_regex: '^1\.0\.[0-9]+$'
+    delivery:
+      # 官方商店要求镜像来自懒猫镜像源：由 Action 转存并改写 manifest 里 site 服务的 image
+      mode: lazycat
+  - id: aihot-db
+    target: service
+    service: db
+    # 官方商店同样要求数据库镜像来自懒猫镜像源；17-alpine 是滚动 tag，按当前 digest 转存
+    source: docker.io/library/postgres
+    channel: stable
+    tag_regex: '^17-alpine$'
+    delivery:
+      mode: lazycat
+
+stores:
+  official:
+    enabled: true
+    skip_if_version_exists: true
+    create_if_missing: true
+    changelog_locales: [zh, en]
+    retry:
+      enabled: false
+      max_attempts: 3
+      initial_delay: 2s
+      max_delay: 30s
+    application:
+      language: zh
+      name: AIHOT
+      brief: 自己找热点、自己写日报的网站框架
+      description: |
+        AIHOT 是一个会自动跑的资讯站：按信源表抓取内容，用你配置的模型做预筛、打分、理解、
+        归组与摘要，生成首页看板、事件页、日报与 RSS；后台 /admin 里能改信源、调精选标准、
+        看用量与预算；还内置 MCP，方便让 Agent 直接查站里的内容。信源、行业词与精选标准都
+        放在 industry/ 目录，换一套就是一个新行业站。
+        懒猫微服包里：数据库、站点进程与数据目录都留在你自己的盒子上，站点地址自动取应用域名，
+        管理员密码与模型密钥由安装向导填写。
+      keywords: 热点,日报,RSS,资讯聚合,MCP,AI
+      source: https://github.com/KKKKhazix/AIHOT
+      source_author: KKKKhazix
+      support_pc: true
+      screenshot_pc_files:
+        - .github/screenshots/pc-1-board.png
+        - .github/screenshots/pc-2-cluster.png
+        - .github/screenshots/pc-3-shots.png
+  private:
+    enabled: true
+    skip_if_version_exists: true
+    name: AIHOT
+    summary: "AIHOT 懒猫微服打包：自建热点站 + 日报 + RSS + 后台，模型与信源自己配。"

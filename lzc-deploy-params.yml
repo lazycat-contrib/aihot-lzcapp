@@ -1,0 +1,67 @@
+params:
+    - id: admin_password
+      type: secret
+      name: "Admin password"
+      description: "Password for /admin, at least 12 characters. Stored only in the app's environment; it is never written into the database."
+      default_value: ""
+
+    - id: llm_base_url
+      type: string
+      name: "Model API base URL"
+      description: "Any OpenAI-compatible endpoint, e.g. https://api.deepseek.com/v1 or https://dashscope.aliyuncs.com/compatible-mode/v1."
+      default_value: "https://api.deepseek.com/v1"
+
+    - id: llm_api_key
+      type: secret
+      name: "Model API key"
+      description: "Key for the endpoint above. The site cannot collect or summarize anything without it."
+      default_value: ""
+
+    - id: llm_model
+      type: string
+      name: "Model"
+      description: "Model id (or one of the presets the app knows) used by every step by default, e.g. deepseek-chat."
+      default_value: "deepseek-chat"
+
+locales:
+    zh:
+        admin_password:
+            name: "管理员密码"
+            description: "登录 /admin 用，至少 12 位。只写进应用环境变量，不会存进数据库。"
+        llm_base_url:
+            name: "模型接口地址"
+            description: "任何 OpenAI 兼容接口，例如 https://api.deepseek.com/v1、https://dashscope.aliyuncs.com/compatible-mode/v1。"
+        llm_api_key:
+            name: "模型 API Key"
+            description: "上面接口的密钥；不填站点起得来，但抓不到、也写不出内容。"
+        llm_model:
+            name: "模型"
+            description: "默认给所有步骤用的模型 id（或应用内置的预设名），例如 deepseek-chat。"
+
+    zh_CN:
+        admin_password:
+            name: "管理员密码"
+            description: "登录 /admin 用，至少 12 位。只写进应用环境变量，不会存进数据库。"
+        llm_base_url:
+            name: "模型接口地址"
+            description: "任何 OpenAI 兼容接口，例如 https://api.deepseek.com/v1、https://dashscope.aliyuncs.com/compatible-mode/v1。"
+        llm_api_key:
+            name: "模型 API Key"
+            description: "上面接口的密钥；不填站点起得来，但抓不到、也写不出内容。"
+        llm_model:
+            name: "模型"
+            description: "默认给所有步骤用的模型 id（或应用内置的预设名），例如 deepseek-chat。"
+
+    en:
+        admin_password:
+            name: "Admin password"
+            description: "Password for /admin, at least 12 characters. Kept in the app's environment only."
+        llm_base_url:
+            name: "Model API base URL"
+            description: "Any OpenAI-compatible endpoint, e.g. https://api.deepseek.com/v1."
+        llm_api_key:
+            name: "Model API key"
+            description: "Key for the endpoint above; without it the site starts but collects nothing."
+        llm_model:
+            name: "Model"
+            description: "Model id (or a preset the app knows) used by every step by default, e.g. deepseek-chat."

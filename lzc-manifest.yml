@@ -1,0 +1,87 @@
+application:
+  subdomain: aihot
+  multi_instance: false
+  # 对外只暴露 app 容器里的 web(3000)；api(3001) 只走容器内回环，不再单独放出去
+  upstreams:
+    - location: /
+      backend: http://site:3000
+  # 这是公开站点：访客不该先过微服登录（后台 /admin 由 ADMIN_PASSWORD 把门），
+  # RSS、分享图、llms.txt、MCP 也要能被站外客户端直接取
+  public_path:
+    - /
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: aihot
+      POSTGRES_PASSWORD: '{{ stable_secret "aihot#db_password" }}'
+      POSTGRES_DB: aihot
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U aihot -d aihot
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    binds:
+      - /lzcapp/var/db:/var/lib/postgresql/data
+  site:
+    # 官方商店交付（delivery.mode=lazycat）时由 Action 转存到懒猫镜像源并改写此行
+    # upstream: ghcr.io/dockers-x/aihot
+    image: ghcr.io/dockers-x/aihot:1.0.1
+    # 镜像里以 node(1000) 运行，而 /lzcapp/var/* 由平台以 root 创建；用 root 起保证 /data 可写
+    user: root
+    # 上游把迁移与播种放在一次性 setup 容器里，懒猫的 depends_on 只认 healthy，
+    # 所以改成启动脚本：先 migrate + seed，再拉起 api/worker/web（细节见 content/startup.sh）
+    command: bash /lzcapp/pkg/content/startup.sh
+    environment:
+      NODE_ENV: production
+      # 对外地址：RSS、分享图、sitemap、MCP 都用它；https 会让会话 Cookie 带上 Secure
+      SITE_URL: 'https://{{ .S.AppDomain }}'
+      # 微服入口是反向代理，访客地址从 X-Forwarded-For 里取
+      TRUST_PROXY: "true"
+      # MCP 只接受 SITE_URL 域名（和 localhost）的请求，这里再兜底容器内的名字
+      MCP_ALLOWED_HOSTS: '{{ .S.AppDomain }},site,web'
+      AIHOT_DATA_DIR: /data
+      DATABASE_URL: 'postgres://aihot:{{ stable_secret "aihot#db_password" }}@db:5432/aihot'
+      API_BASE_URL: http://127.0.0.1:3001
+      LOCAL_ROUTER_URL: http://127.0.0.1:3000
+      SESSION_SECRET: '{{ stable_secret "aihot#session_secret" }}'
+      IMG_PROXY_SIGN_SECRET: '{{ stable_secret "aihot#img_proxy_secret" }}'
+      ADMIN_PASSWORD: '{{ .U.admin_password }}'
+      LLM_BASE_URL: '{{ .U.llm_base_url }}'
+      LLM_API_KEY: '{{ .U.llm_api_key }}'
+      LLM_MODEL: '{{ .U.llm_model }}'
+      API_HOST: 0.0.0.0
+      API_PORT: "3001"
+      WEB_HOST: 0.0.0.0
+      WEB_PORT: "3000"
+    healthcheck:
+      # 走 web 的 /api/health：它由 web 转发给 api，返回 200 说明 web、api、数据库都活着；
+      # 而 api 是在 migrate + seed 之后才起的，所以健康也就意味着迁移已经完成
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+    depends_on:
+      - db
+    binds:
+      - /lzcapp/var/data:/data
+usage: |
+  AIHOT 自己找热点、自己写日报：抓信源、调模型打分与归组，生成日报和 RSS，后台在 /admin。
+
+  【安装时填的三件事】
+  1. 管理员密码（至少 12 位）：登录 /admin 用；
+  2. 模型：任何 OpenAI 兼容接口都行（LLM_BASE_URL / LLM_API_KEY / LLM_MODEL，默认给的是 DeepSeek）；
+  3. 其余随喜好：站点地址、密钥、数据库密码都由本应用自动生成。
+
+  【打开站点】
+  直接访问应用域名即可（公开站点，不需要微服登录）。后台：https://你的域名/admin
+  首次打开后一两分钟开始有内容，第一批信源大约半小时处理完。
+
+  【数据】
+  数据库在 /lzcapp/var/db，上传图片、图片缓存与本地备份在 /lzcapp/var/data，升级不丢。
+  站点地址（SITE_URL）自动取应用域名——若你在微服上换了域名，重新安装或改环境变量即可。

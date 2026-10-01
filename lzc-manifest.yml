@@ -27,8 +27,8 @@ services:
       - /lzcapp/var/db:/var/lib/postgresql/data
   site:
     # 官方商店交付（delivery.mode=lazycat）时由 Action 转存到懒猫镜像源并改写此行
-    # upstream: ghcr.io/dockers-x/aihot
-    image: ghcr.io/dockers-x/aihot:1.0.1
+    # upstream: ghcr.io/dockers-x/aihot:1.0.1
+    image: registry.lazycat.cloud/czyt/dockers-x/aihot:bd3982f95b58a182
     # 镜像里以 node(1000) 运行，而 /lzcapp/var/* 由平台以 root 创建；用 root 起保证 /data 可写
     user: root
     # 上游把迁移与播种放在一次性 setup 容器里，懒猫的 depends_on 只认 healthy，

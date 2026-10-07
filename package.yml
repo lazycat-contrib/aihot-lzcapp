@@ -1,5 +1,5 @@
 package: cloud.lazycat.app.aihot
-version: 1.0.15
+version: 1.0.16
 name: AIHOT
 description: A site that finds its own hot topics and writes a daily digest — configurable news aggregation with RSS, admin console and MCP.
 min_os_version: 1.5.0

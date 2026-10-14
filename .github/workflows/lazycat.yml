@@ -2,7 +2,7 @@ name: Publish LazyCat LPK
 
 on:
   schedule:
-    - cron: "23 */3 * * *"
+    - cron: "0 */12 * * *"
   workflow_dispatch:
 
 permissions:

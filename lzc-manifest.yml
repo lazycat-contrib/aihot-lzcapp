@@ -1,7 +1,14 @@
 application:
   subdomain: aihot
   multi_instance: false
-  # 对外只暴露 app 容器里的 web(3000)；api(3001) 只走容器内回环，不再单独放出去
+  entries:
+    - id: main
+      title: "AIHOT"
+      path: /
+    - id: admin
+      title: "Admin Console"
+      path: /admin
+  # 对外只暴露 site 容器里的 web(3000)；api(3001) 只走容器内回环，不再单独放出去
   upstreams:
     - location: /
       backend: http://site:3000
@@ -9,6 +16,18 @@ application:
   # RSS、分享图、llms.txt、MCP 也要能被站外客户端直接取
   public_path:
     - /
+  injects:
+    - id: admin-password-autofill
+      when:
+        - /admin/login
+        - /admin/login*
+      do:
+        - src: builtin://simple-inject-password
+          params:
+            password: "{{ .U.admin_password }}"
+            allowPasswordOnly: true
+            passwordSelector: "#password"
+            autoSubmit: false
 services:
   db:
     # 用懒猫镜像源里已转存的 postgres（上游 library/postgres:17.11，与 rote-lzcapp 同一个）：
@@ -29,7 +48,8 @@ services:
       - /lzcapp/var/db:/var/lib/postgresql/data
   site:
     # 官方商店交付（delivery.mode=lazycat）时由 Action 转存到懒猫镜像源并改写此行
-    # upstream: ghcr.io/dockers-x/aihot:1.0.31
+    # upstream: ghcr.io/dockers-x/aihot:1.0.31；发布 Action 会检测新版不可变标签、
+    # 转存到懒猫镜像源，并原子改写 package.yml 与此处镜像引用。
     image: registry.lazycat.cloud/czyt/dockers-x/aihot:ba755d4b2193d5ae
     # 镜像里以 node(1000) 运行，而 /lzcapp/var/* 由平台以 root 创建；用 root 起保证 /data 可写
     user: root
@@ -54,6 +74,9 @@ services:
       LLM_BASE_URL: '{{ .U.llm_base_url }}'
       LLM_API_KEY: '{{ .U.llm_api_key }}'
       LLM_MODEL: '{{ .U.llm_model }}'
+      # 新版上游安全阀默认关闭；安装向导已经要求模型配置，因此在 LPK 中显式开启。
+      COLLECT_ENABLED: "true"
+      MODEL_CALLS_ENABLED: "true"
       API_HOST: 0.0.0.0
       API_PORT: "3001"
       WEB_HOST: 0.0.0.0
@@ -76,12 +99,12 @@ usage: |
   AIHOT 自己找热点、自己写日报：抓信源、调模型打分与归组，生成日报和 RSS，后台在 /admin。
 
   【安装时填的三件事】
-  1. 管理员密码（至少 12 位）：登录 /admin 用；
+  1. 管理员密码（至少 12 位）：安装时自动生成，也可自行修改；登录 /admin 用；
   2. 模型：任何 OpenAI 兼容接口都行（LLM_BASE_URL / LLM_API_KEY / LLM_MODEL，默认给的是 DeepSeek）；
   3. 其余随喜好：站点地址、密钥、数据库密码都由本应用自动生成。
 
   【打开站点】
-  直接访问应用域名即可（公开站点，不需要微服登录）。后台：https://你的域名/admin
+  直接访问应用域名即可（公开站点，不需要微服登录）。启动器右键菜单中的“管理后台”可直达 /admin；登录页会自动填充安装密码，但不会自动提交。
   首次打开后一两分钟开始有内容，第一批信源大约半小时处理完。
 
   【数据】

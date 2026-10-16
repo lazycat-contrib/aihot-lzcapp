@@ -11,6 +11,7 @@
 - **路由与入口**：`/` → `site:3000`（web），另提供启动器“管理后台”入口直达 `/admin`。api(3001) 只在容器内回环，与上游一致。管理登录页通过 `simple-inject-password` 自动填充安装时生成的管理员密码，但不会自动提交。
 - **`public_path: [/]`**：这是给人看的公开站点，访客不该先过微服登录；后台 `/admin` 由 `ADMIN_PASSWORD` 把门；RSS、分享图、`llms.txt`、MCP 也要能被站外客户端直接取。
 - **环境**：`SITE_URL=https://<应用域名>`（RSS/分享图/MCP/会话 Cookie 都用它）、`TRUST_PROXY=true`（微服入口是反代）、`MCP_ALLOWED_HOSTS` 兜底容器内名字；数据库密码、会话密钥、图片代理签名密钥由 `stable_secret` 生成；管理员密码由安装向导自动生成至少 20 位随机值；新版上游默认关闭的 `COLLECT_ENABLED`、`MODEL_CALLS_ENABLED` 在 LPK 中显式开启。
+- **模型地址要求**：`LLM_BASE_URL` 必须是 `site` 容器可直接访问的 OpenAI-compatible 后端 API。不要填写会跳转到懒猫登录页的 `https://<应用>.heiyu.space/...` 网页入口；同机 TokenHub/模型网关应使用它提供的专用后端 API 地址。若模型接口不可达，文章会停在 `processing_state=new`，日报随后报 `nothing judged in its window`。
 - **持久化**：`/lzcapp/var/db`（数据库）、`/lzcapp/var/data`（上传、图片缓存、本地备份）。
 - **截图**：`.github/screenshots/` 三张取自上游仓库 `docs/assets`（MIT），用于官方商店应用信息。
 

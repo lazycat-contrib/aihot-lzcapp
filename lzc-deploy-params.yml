@@ -9,7 +9,7 @@ params:
     - id: llm_base_url
       type: string
       name: "Model API base URL"
-      description: "Any OpenAI-compatible endpoint, e.g. https://api.deepseek.com/v1 or https://dashscope.aliyuncs.com/compatible-mode/v1."
+      description: "An OpenAI-compatible API reachable directly from this app container, e.g. https://api.deepseek.com/v1. Do not use a LazyCat *.heiyu.space web/login URL; use the provider's backend API endpoint instead."
       default_value: "https://api.deepseek.com/v1"
 
     - id: llm_api_key
@@ -31,7 +31,7 @@ locales:
             description: "登录 /admin 用，至少 12 位。安装时自动生成安全密码，也可以自行修改。"
         llm_base_url:
             name: "模型接口地址"
-            description: "任何 OpenAI 兼容接口，例如 https://api.deepseek.com/v1、https://dashscope.aliyuncs.com/compatible-mode/v1。"
+            description: "必须是本应用容器可直接访问的 OpenAI 兼容 API，例如 https://api.deepseek.com/v1。不要填写会跳转到懒猫登录页的 *.heiyu.space 网页地址；同机模型网关请填写其专用后端 API 地址。"
         llm_api_key:
             name: "模型 API Key"
             description: "上面接口的密钥；不填站点起得来，但抓不到、也写不出内容。"
@@ -45,7 +45,7 @@ locales:
             description: "登录 /admin 用，至少 12 位。安装时自动生成安全密码，也可以自行修改。"
         llm_base_url:
             name: "模型接口地址"
-            description: "任何 OpenAI 兼容接口，例如 https://api.deepseek.com/v1、https://dashscope.aliyuncs.com/compatible-mode/v1。"
+            description: "必须是本应用容器可直接访问的 OpenAI 兼容 API，例如 https://api.deepseek.com/v1。不要填写会跳转到懒猫登录页的 *.heiyu.space 网页地址；同机模型网关请填写其专用后端 API 地址。"
         llm_api_key:
             name: "模型 API Key"
             description: "上面接口的密钥；不填站点起得来，但抓不到、也写不出内容。"
@@ -59,7 +59,7 @@ locales:
             description: "Password for /admin, at least 12 characters. A secure value is generated automatically during installation."
         llm_base_url:
             name: "Model API base URL"
-            description: "Any OpenAI-compatible endpoint, e.g. https://api.deepseek.com/v1."
+            description: "An OpenAI-compatible API reachable directly from this app container, e.g. https://api.deepseek.com/v1. Do not enter a LazyCat *.heiyu.space web/login URL; use a dedicated backend API endpoint."
         llm_api_key:
             name: "Model API key"
             description: "Key for the endpoint above; without it the site starts but collects nothing."

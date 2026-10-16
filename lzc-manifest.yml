@@ -100,7 +100,7 @@ usage: |
 
   【安装时填的三件事】
   1. 管理员密码（至少 12 位）：安装时自动生成，也可自行修改；登录 /admin 用；
-  2. 模型：任何 OpenAI 兼容接口都行（LLM_BASE_URL / LLM_API_KEY / LLM_MODEL，默认给的是 DeepSeek）；
+  2. 模型：填写本应用容器可直连的 OpenAI 兼容 API（LLM_BASE_URL / LLM_API_KEY / LLM_MODEL，默认给的是 DeepSeek）。不要填写会跳转到懒猫登录页的 *.heiyu.space 网页地址；同机模型网关请使用其专用后端 API 地址；
   3. 其余随喜好：站点地址、密钥、数据库密码都由本应用自动生成。
 
   【打开站点】

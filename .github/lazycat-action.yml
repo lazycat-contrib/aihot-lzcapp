@@ -28,13 +28,14 @@ images:
     channel: stable
     tag_regex: '^1\.0\.[0-9]+$'
     delivery:
-      # 官方商店要求镜像来自懒猫镜像源：由 Action 转存并改写 manifest 里 site 服务的 image
-      mode: lazycat
+      # 镜像模式：不转存到懒猫镜像源，改用公共镜像加速（ghcr.1ms.run），要求 digest 与上游一致
+      mode: mirror
+      require_digest_match: true
   # 数据库镜像已直接引用懒猫镜像源里现成的 postgres（见 lzc-manifest.yml），无需转存
 
 stores:
   official:
-    enabled: true
+    enabled: false
     skip_if_version_exists: true
     create_if_missing: true
     changelog_locales: [zh, en]
